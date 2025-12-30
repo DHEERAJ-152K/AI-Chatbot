@@ -1,7 +1,7 @@
 import { Send, Bot, User, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://ai-chatbot-t5wo.onrender.com/api';
 
 export default function ChatWidget() {
   const [messages, setMessages] = useState([]);
