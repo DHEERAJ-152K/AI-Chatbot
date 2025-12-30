@@ -1,7 +1,7 @@
-import { ConversationRepository } from '../repositories/conversation.repository';
-import { MessageRepository } from '../repositories/message.repository';
-import { GeminiService } from './llm.service';
-import { Message } from '../types';
+import { ConversationRepository } from "../repositories/conversation.repository";
+import { MessageRepository } from "../repositories/message.repository";
+import { GeminiService } from "./llm.service";
+import { Message } from "../types";
 
 export class ChatService {
   private conversationRepo: ConversationRepository;
@@ -21,8 +21,8 @@ export class ChatService {
     // Save user message
     await this.messageRepo.create({
       conversationId: sessionId,
-      sender: 'user',
-      text: userMessage
+      sender: "user",
+      text: userMessage,
     });
 
     // Get conversation histoy for context
@@ -34,8 +34,8 @@ export class ChatService {
     // Save AI response
     await this.messageRepo.create({
       conversationId: sessionId,
-      sender: 'ai',
-      text: aiReply
+      sender: "ai",
+      text: aiReply,
     });
 
     return aiReply;

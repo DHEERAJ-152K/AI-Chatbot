@@ -1,7 +1,7 @@
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
-import { Conversation, Message } from '../types';
-import path from 'path';
+import sqlite3 from "sqlite3";
+import { open, Database } from "sqlite";
+import { Conversation, Message } from "../types";
+import path from "path";
 
 class SQLiteDatabase {
   private db: Database | null = null;
@@ -10,25 +10,25 @@ class SQLiteDatabase {
     try {
       // Open database connection
       this.db = await open({
-        filename: path.join(process.cwd(), 'chat.db'),
-        driver: sqlite3.Database
+        filename: path.join(process.cwd(), "chat.db"),
+        driver: sqlite3.Database,
       });
 
       // Enable foreign keys
-      await this.db.exec('PRAGMA foreign_keys = ON;');
+      await this.db.exec("PRAGMA foreign_keys = ON;");
 
       // Create tables
       await this.createTables();
 
-      console.log('SQLite database initialized successfully');
+      console.log("SQLite database initialized successfully");
     } catch (error) {
-      console.error('Failed to initialize database:', error);
+      console.error("Failed to initialize database:", error);
       throw error;
     }
   }
 
   private async createTables(): Promise<void> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) throw new Error("Database not initialized");
 
     // Create conversations table
     await this.db.exec(`
@@ -64,19 +64,19 @@ class SQLiteDatabase {
   }
 
   async createConversation(conversation: Conversation): Promise<void> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) throw new Error("Database not initialized");
 
     await this.db.run(
-      'INSERT OR IGNORE INTO conversations (id, created_at, metadata) VALUES (?, ?, ?)',
+      "INSERT OR IGNORE INTO conversations (id, created_at, metadata) VALUES (?, ?, ?)",
       [conversation.id, conversation.createdAt, JSON.stringify(conversation.metadata || {})]
     );
   }
 
   async getConversation(id: string): Promise<Conversation | null> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) throw new Error("Database not initialized");
 
     const row = await this.db.get(
-      'SELECT id, created_at as createdAt, metadata FROM conversations WHERE id = ?',
+      "SELECT id, created_at as createdAt, metadata FROM conversations WHERE id = ?",
       [id]
     );
 
@@ -85,21 +85,21 @@ class SQLiteDatabase {
     return {
       id: row.id,
       createdAt: row.createdAt,
-      metadata: JSON.parse(row.metadata || '{}')
+      metadata: JSON.parse(row.metadata || "{}"),
     };
   }
 
   async createMessage(message: Message): Promise<void> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) throw new Error("Database not initialized");
 
     await this.db.run(
-      'INSERT INTO messages (id, conversation_id, sender, text, timestamp) VALUES (?, ?, ?, ?, ?)',
+      "INSERT INTO messages (id, conversation_id, sender, text, timestamp) VALUES (?, ?, ?, ?, ?)",
       [message.id, message.conversationId, message.sender, message.text, message.timestamp]
     );
   }
 
   async getMessages(conversationId: string): Promise<Message[]> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) throw new Error("Database not initialized");
 
     const rows = await this.db.all(
       `SELECT id, conversation_id as conversationId, sender, text, timestamp 

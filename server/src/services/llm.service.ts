@@ -1,7 +1,6 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Message } from '../types';
-import dotenv from 'dotenv';
-
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Message } from "../types";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -49,16 +48,16 @@ export class GeminiService {
   private maxHistoryMessages = 10; // Limit context for cost control
 
   constructor() {
-    const apiKey = process.env.API
-    
+    const apiKey = process.env.API;
+
     if (!apiKey) {
-      throw new Error('GOOGLE_API_KEY is required but not set in environment');
+      throw new Error("GOOGLE_API_KEY is required but not set in environment");
     }
 
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({
       model: LLM_MODEL,
-      systemInstruction: STORE_KNOWLEDGE
+      systemInstruction: STORE_KNOWLEDGE,
     });
   }
 
@@ -66,11 +65,11 @@ export class GeminiService {
     try {
       // Prepare conversation history (limit to recent messages)
       const recentHistory = history.slice(-this.maxHistoryMessages);
-      
+
       // Build chat history in Gemini format
-      const chatHistory = recentHistory.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
+      const chatHistory = recentHistory.map((msg) => ({
+        role: msg.sender === "user" ? "user" : "model",
+        parts: [{ text: msg.text }],
       }));
 
       // Start a chat session with history
@@ -88,26 +87,25 @@ export class GeminiService {
       const text = response.text();
 
       if (!text || text.trim().length === 0) {
-        return 'I apologize, but I had trouble generating a response. Could you please try rephrasing your question?';
+        return "I apologize, but I had trouble generating a response. Could you please try rephrasing your question?";
       }
 
       return text;
-
     } catch (error: any) {
-      console.error('Gemini API Error:', error);
+      console.error("Gemini API Error:", error);
 
       // Handle specific error types
-      if (error.message?.includes('API_KEY_INVALID')) {
-        throw new Error('Authentication failed. Please check your Google API key.');
-      } else if (error.message?.includes('RATE_LIMIT_EXCEEDED')) {
-        throw new Error('Rate limit exceeded. Please try again in a moment.');
-      } else if (error.message?.includes('SAFETY')) {
-        return 'I apologize, but I cannot generate a response to that message. Please try asking something else.';
-      } else if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
-        throw new Error('Unable to connect to AI service. Please try again.');
+      if (error.message?.includes("API_KEY_INVALID")) {
+        throw new Error("Authentication failed. Please check your Google API key.");
+      } else if (error.message?.includes("RATE_LIMIT_EXCEEDED")) {
+        throw new Error("Rate limit exceeded. Please try again in a moment.");
+      } else if (error.message?.includes("SAFETY")) {
+        return "I apologize, but I cannot generate a response to that message. Please try asking something else.";
+      } else if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
+        throw new Error("Unable to connect to AI service. Please try again.");
       }
 
-      throw new Error('AI service temporarily unavailable. Please try again shortly.');
+      throw new Error("AI service temporarily unavailable. Please try again shortly.");
     }
   }
 }

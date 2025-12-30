@@ -1,6 +1,6 @@
-import { db } from '../db/database';
-import { Message, MessageInput } from '../types';
-import { v4 as uuidv4 } from 'uuid';
+import { db } from "../db/database";
+import { Message, MessageInput } from "../types";
+import { v4 as uuidv4 } from "uuid";
 
 export class MessageRepository {
   async create(input: MessageInput): Promise<Message> {
@@ -9,7 +9,7 @@ export class MessageRepository {
       conversationId: input.conversationId,
       sender: input.sender,
       text: input.text,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     db.createMessage(message);
